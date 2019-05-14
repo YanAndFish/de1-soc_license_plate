@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<board_env version="18.0" name="a10soc">
+  <hardware dir="hardware" default="a10soc"></hardware>
+  <platform name="arm32">
+    <linkflags>-L%b/arm32/lib</linkflags>
+    <linklibs>-lintel_a10soc32_mmd</linklibs>
+    <utilbindir>%b/arm32/bin</utilbindir>
+  </platform>
+  <platform name="linux64">
+    <linkflags>-L%b/arm32/lib -L%a/host/arm32/lib</linkflags>
+    <linklibs>-lintel_a10soc32_mmd -lstdc++</linklibs>
+    <utilbindir>%b/arm32/bin</utilbindir>
+  </platform>
+  <platform name="windows64">
+    <linkflags>-L%b\arm32\lib</linkflags>
+    <linklibs>-lintel_a10soc32_mmd</linklibs>
+    <utilbindir>%b\arm32\bin</utilbindir>
+  </platform>
+</board_env>

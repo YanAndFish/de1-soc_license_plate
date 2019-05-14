@@ -1,0 +1,110 @@
+#!/bin/sh
+
+# (C) 1992-2018 Intel Corporation.                            
+# Intel, the Intel logo, Intel, MegaCore, NIOS II, Quartus and TalkBack words    
+# and logos are trademarks of Intel Corporation or its subsidiaries in the U.S.  
+# and/or other countries. Other marks and brands may be claimed as the property  
+# of others. See Trademarks on intel.com for full list of Intel trademarks or    
+# the Trademarks & Brands Names Database (if Intel) or See www.Intel.com/legal (if Altera) 
+# Your use of Intel Corporation's design tools, logic functions and other        
+# software and tools, and its AMPP partner logic functions, and any output       
+# files any of the foregoing (including device programming or simulation         
+# files), and any associated documentation or information are expressly subject  
+# to the terms and conditions of the Altera Program License Subscription         
+# Agreement, Intel MegaCore Function License Agreement, or other applicable      
+# license agreement, including, without limitation, that your use is for the     
+# sole purpose of programming logic devices manufactured by Intel and sold by    
+# Intel or its authorized distributors.  Please refer to the applicable          
+# agreement for further details.                                                 
+
+
+# Bash uses $IFS (Internal Field Separator) variable to determine what the
+# field separators are. By default $IFS is set to the space character.
+# Setting IFS= disable the default behaviour within this script and its
+# included scripts to support use of path with spaces.
+IFS=
+
+# First find the absolute path to SDK.
+SCRIPT_PATH=`dirname $0`
+
+if test -z "$SCRIPT_PATH" ; then
+   # in case the dirname doesn't work, use "which" (slower)
+   SCRIPT_PATH=`which $0 2>&1 | tail -1`
+fi
+
+if test "$SCRIPT_PATH" = "." -o -z "$SCRIPT_PATH" ; then
+   SDK=`dirname \`pwd\``
+else
+   SDK=`dirname $SCRIPT_PATH`
+fi
+
+if test "$SDK" = ".." ; then
+   SDK=`dirname \`pwd\``
+fi
+
+if test `case "$SDK" in /*) echo match ;; *) echo nomatch ;; esac` = "nomatch" ; then
+	SDK=`(cd $SDK ; pwd)`
+fi
+CMD_NAME=`basename $0`
+
+# Should we automatically detect and use an externally provided Perl?
+external_perl=1
+perl=
+
+# Detect the operating environment
+ARCH=$AOCL_ARCH_OVERRIDE
+if [ -z "$ARCH" ]; then
+   ARCH=`uname -m`
+fi
+arch_type=
+case $ARCH in
+   x86_64) 
+      arch_type=linux64
+      arch_type_name="Linux x86-64"
+      ;;
+   armv7l) 
+      arch_type=arm32
+      arch_type_name="Linux SoC"
+      ;;
+   ppc64) 
+      arch_type=ppc64
+      arch_type_name="Linux Power"
+      ;;
+   ppc64le)
+      arch_type=ppc64le
+      arch_type_name="Linux Power Little Endian"
+      ;;
+   *)
+      echo "$CMD_NAME: The '$ARCH' environment is not supported by the Intel(R) FPGA SDK for OpenCL(TM)"
+      exit 1;
+      ;;
+esac
+bin=host/$arch_type/bin
+software_type=
+if [ -e $SDK/$arch_type/bin/aocl-clang ]; then
+   software_type="SDK"
+else
+   software_type="Runtime Environment"
+fi
+software_name="Intel(R) FPGA $arch_type_name $software_type for OpenCL(TM)"
+
+binary="$SDK/$bin/$CMD_NAME"
+if [ ! -x "$binary" ]; then
+   echo "$CMD_NAME: The $software_name is incomplete: Can't find $binary"
+   exit 1
+fi
+
+if [ 1 = $external_perl ]; then
+   perl=`which perl 2>/dev/null`
+   if [ ! -x "$perl" ]; then
+      echo "$CMD_NAME: The '$ARCH' runtime environment for the $software_name requires a standalone Perl"
+      exit 1
+   fi
+fi
+
+# Split out these delegation cases, in case $perl has spaces.
+if [ -z "$perl" ]; then
+   exec "$binary" --standalone "$@"
+else
+   exec "$binary" --standalone --perl "$perl" "$@"
+fi

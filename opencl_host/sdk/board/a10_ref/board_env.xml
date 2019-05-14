@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<board_env version="13.0" name="c5soc">
+  <hardware dir="hardware" default="c5soc"></hardware>
+  <platform name="arm32">
+    <linkflags>-L%b/arm32/lib</linkflags>
+    <linklibs>-lintel_soc32_mmd</linklibs>
+    <utilbindir>%b/arm32/bin</utilbindir>
+  </platform>
+  <platform name="linux64">
+    <linkflags>-L%b/arm32/lib -L%a/host/arm32/lib</linkflags>
+    <linklibs>-lintel_soc32_mmd -lstdc++</linklibs>
+    <utilbindir>%b/arm32/bin</utilbindir>
+  </platform>
+  <platform name="windows64">
+    <linkflags>-L%b\arm32\lib</linkflags>
+    <linklibs>-lintel_soc32_mmd</linklibs>
+    <utilbindir>%b\arm32\bin</utilbindir>
+  </platform>
+</board_env>
