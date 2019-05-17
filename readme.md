@@ -22,6 +22,7 @@ If you think that developing FPGA must be use Verilog, be sure to close this pag
 - Quartus 18.1
 - IntelFPGA OpenCL SDK 18.1
 - ubuntu 16.04 root file system
+- Node.js 11.10.1
 
 ## How to compile
 
