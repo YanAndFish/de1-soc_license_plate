@@ -1,7 +1,5 @@
 # Design of Image Recognition System Based on FPGA
 
-If you think that developing FPGA must be use Verilog, be sure to close this page.Thank you.
-
 ## Hardware Architecture
 
 ![](./document_photo/base.png)
